@@ -1,0 +1,76 @@
+version: '3'
+
+services: # define all the services we are building
+  mariadb:
+    container_name: mariadb # name of the container to replace the one automatically given
+    networks: # which network it belongs to and which it has access to.
+      - inception
+    volumes: # define the volume to mount
+      - mariadb:/var/lib/mysql
+    build: # configuration options that are applied at build time
+      context: requirements/mariadb # string containging path to the build context
+      dockerfile: Dockerfile # if we want to specify an alterntive Dockerfile, in other words, from what I understood, with a different name than "Dockerfile"
+    env_file: .env # obvious
+    restart: on-failure # restart defines the service restart conditions in case of the restart of the Docker deamon itself. Here --> "on-failure" = only in case of error
+    expose: # expose ports without publishing them to the host machine - they'll only be accessible to linked services. Only the internal port can be specified
+      - "3306"
+
+  nginx:
+    container_name: nginx
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/wordpress
+    build: 
+      context: requirements/nginx
+      dockerfile: Dockerfile
+    depends_on: # DO NOT start nginx if MariaDb hasn't started yet
+      - wordpress
+    env_file: .env
+    ports: # define ports mapping between the container and the host (host::container) 
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    restart: on-failure
+
+  wordpress:
+    container_name: wordpress
+    env_file: .env
+    volumes:
+    - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    build: 
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    depends_on:    # wordpress will be started after mariadb
+      - mariadb
+    restart: on-failure
+    expose: 
+      - "9000"
+
+
+# In order to make sure that even if our Wordpress or MariaDB
+# container crashes and loose all our file we'll create
+# a back-up in the form of "volumes" stored locally (= on the
+# host machine).
+volumes: # define volumes used by containers
+  wordpress:
+    driver: local
+    driver_opts: #specifies a list of options as key-value pairs to pass to the driver for this volume. Those options are driver-dependent.
+      type: 'none' # type of volume (tmpfs, ntfs...)
+      o: 'bind'
+      device: '/home/alicia/Documents/his_inception/stuff/wordpress'
+  mariadb:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/alicia/Documents/his_inception/stuff/mariadb'
+
+
+
+networks: # define the networkfs used by the containers
+    inception:
+      driver: bridge

@@ -20,11 +20,12 @@ COPY ./conf/php.conf /etc/php/7.3/fpm/pool.d/www.conf
 
 RUN chown -R root:root /var/www/wordpress
 
+# CLI
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 
-COPY conf/auto_config.sh auto_config.sh
+COPY /tools/param_wordpress.sh param_wordpress.sh
 
 ENTRYPOINT ["bash", "auto_config.sh"]
