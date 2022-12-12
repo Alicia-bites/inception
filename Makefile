@@ -1,14 +1,14 @@
 PATH_YML = ./srcs/docker-compose.yml
 
-ifneq (,$(wildcard srcs/requirements/tools/backup.path.txt))
-	path_file := srcs/requirements/backup_config/backup.path.txt
+ifneq (,$(wildcard srcs/requirements/backup_config/backup_path.txt))
+	path_file := srcs/requirements/backup_config/backup_path.txt
 	variable := $(shell cat ${path_file})
 	wordpress_path := $(shell echo ${variable}/wordpress)
 	mariadb_path := $(shell echo ${variable}/mariadb)
 endif
 
 all:
-ifeq (,$(wildcard ./srcs/requirements/tools/backup.path.txt))
+ifeq (,$(wildcard ./srcs/requirements/backup_config/backup_path.txt))
 	@bash srcs/requirements/backup_config/backup_config.sh
 	@echo "Good!"
 	@echo "Use make to launch"
@@ -38,8 +38,8 @@ fclean: clean
 	@sudo docker system prune -af
 
 reset: clean
-	@rm srcs/requirements/backup_config/backup.path.txt
+	@rm srcs/requirements/backup_config/backup_path.txt
 	@printf "\nPath is reset\n"
 
 config:
-	@bash srcs/requirements/backup_config/backup_backup_config.sh
+	@bash srcs/requirements/backup_config/backup_config.sh
