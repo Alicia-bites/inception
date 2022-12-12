@@ -19,8 +19,6 @@ RUN mkdir -p /var/run/nginx
 RUN chmod 755 /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
-# EXPOSE 443
-
 # the daemon off directive will disable the #
 # self-daemonizing behavior of nginx
 CMD ["nginx", "-g", "daemon off;"]

@@ -61,13 +61,13 @@ volumes: # define volumes used by containers
     driver_opts: #specifies a list of options as key-value pairs to pass to the driver for this volume. Those options are driver-dependent.
       type: 'none' # type of volume (tmpfs, ntfs...)
       o: 'bind'
-      device: '/home/alicia/Documents/inception/stuff/wordpress' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
+      device: 'pathtodata/wordpress' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
   mariadb:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/home/alicia/Documents/inception/stuff/mariadb' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
+      device: 'pathtodata/mariadb' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
 
 networks: # define the networkfs used by the containers
     inception:
