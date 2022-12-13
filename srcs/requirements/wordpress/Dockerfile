@@ -28,4 +28,4 @@ RUN mv wp-cli.phar /usr/local/bin/wp
 
 COPY /tools/param_wordpress.sh param_wordpress.sh
 
-ENTRYPOINT ["bash", "auto_config.sh"]
+ENTRYPOINT ["bash", "param_wordpress.sh"]

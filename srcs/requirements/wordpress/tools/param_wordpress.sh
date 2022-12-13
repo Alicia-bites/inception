@@ -1,45 +1,74 @@
+# #!bin/bash
+
+# # Description : a script to configure Wordpress 
+
+# #Colors
+# RESET='\033[0m'
+# DODGERBLUE1="\033[38;5;33m"
+# ORANGERED1="\033[38;5;202m"
+# SPRINGGREEN5="\033[38;5;41m"
+# GREENYELLOW="\033[38;5;154m"
+# DEEPPINK6="\033[38;5;125m"
+# DARKSLATEGRAY2="\033[38;5;87m"
+# CHARTREUSE6="\033[38;5;64m"
+# SLATEBLUE1="\033[38;5;99m"
+
+# #waiting a bit for MariaDB to be launched
+# sleep 7
+
+# # config wordpress if it hasn't been done already
+# # True if file exists and is a regular file. 
+# if [ ! -f /var/www/wordpress/wp-config.php ]; then
+
+# wp config create	--allow-root \
+# 					--dbname=$SQL_DATABASE \
+# 					--dbuser=$SQL_USER \
+# 					--dbpass=$SQL_PASSWORD \
+# 					--dbhost=mariadb:3306 \
+# 					--path='/var/www/wordpress'
+
+# sleep 3
+
+# wp core install	--url=$DOMAIN_NAME \
+# 				--title=$SITE_TITLE \
+# 				--admin_user=$ADMIN_USER \
+# 				--admin_password=$ADMIN_PASSWORD \
+# 				--admin_email=$ADMIN_EMAIL \
+# 				--allow-root \
+# 				--path='/var/www/wordpress'
+
+# wp user create	--allow-root \
+# 				--role=author $USER1_LOGIN $USER1_MAIL \
+# 				--user_pass=$USER1_PASS \
+# 				--path='/var/www/wordpress' >> /log.txt
+# fi
+
+# # True if file exists and is a directory. 
+# if [ ! -d /run/php ]; then
+#     mkdir ./run/php
+# fi
+# /usr/sbin/php-fpm7.3 -F
+
+# !/bin/sh
+
 #!bin/bash
-
-# Description : a script to configure Wordpress 
-
-#Colors
-RESET='\033[0m'
-DODGERBLUE1="\033[38;5;33m"
-ORANGERED1="\033[38;5;202m"
-SPRINGGREEN5="\033[38;5;41m"
-GREENYELLOW="\033[38;5;154m"
-DEEPPINK6="\033[38;5;125m"
-DARKSLATEGRAY2="\033[38;5;87m"
-CHARTREUSE6="\033[38;5;64m"
-SLATEBLUE1="\033[38;5;99m"
-
-#waiting a bit for MariaDB to be launched
-sleep 7
-
-# config wordpress if it hasn't been done already
+sleep 10
 if [ ! -e /var/www/wordpress/wp-config.php ]; then
-    wp config create	--allow-root \
-						--dbname=$SQL_DATABASE \ 
-						--dbuser=$SQL_USER \
-						--dbpass=$SQL_PASSWORD \
-    					--dbhost=mariadb:3306 \
-						--path='/var/www/wordpress'
+    wp config create	--allow-root --dbname=$SQL_DATABASE --dbuser=$SQL_USER --dbpass=$SQL_PASSWORD \
+    					--dbhost=mariadb:3306 --path='/var/www/wordpress'
 
-sleep 3
-wp core install	--url=$DOMAIN_NAME \
-				--title=$SITE_TITLE \
-				--admin_user=$ADMIN_USER \
-				--admin_password=$ADMIN_PASSWORD \
-				--admin_email=$ADMIN_EMAIL \
-				--allow-root \
-				--path='/var/www/wordpress'
+sleep 2
+wp core install     --url=$DOMAIN_NAME --title=$SITE_TITLE --admin_user=$ADMIN_USER --admin_password=$ADMIN_PASSWORD --admin_email=$ADMIN_EMAIL --allow-root --path='/var/www/wordpress'
+wp user create      --allow-root --role=author $USER1_LOGIN $USER1_MAIL --user_pass=$USER1_PASS --path='/var/www/wordpress' >> /log.txt
 
-wp user create	--allow-root \
-				--role=author $USER1_LOGIN $USER1_MAIL \
-				--user_pass=$USER1_PASS \
-				--path='/var/www/wordpress' >> /log.txt
+wp theme install  twenty sixteen --activate --allow-root
+wp theme update twenty sixteen --allow-root
+wp plugin update --all --allow-root
+echo "YOUHHOUUU"
+
 fi
 
+# if /run/php folder does not exist, create it
 if [ ! -d /run/php ]; then
     mkdir ./run/php
 fi

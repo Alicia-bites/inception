@@ -15,6 +15,22 @@ services: # define all the services we are building
     expose: # expose ports without publishing them to the host machine - they'll only be accessible to linked services. Only the internal port can be specified
       - "3306"
 
+  wordpress:
+    container_name: wordpress
+    env_file: .env
+    volumes:
+    - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    build: 
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    depends_on:    # wordpress will be started after mariadb
+      - mariadb
+    restart: on-failure
+    expose: 
+      - "9000"
+
   nginx:
     container_name: nginx
     networks:
@@ -34,23 +50,6 @@ services: # define all the services we are building
         mode: host
     restart: on-failure
 
-  wordpress:
-    container_name: wordpress
-    env_file: .env
-    volumes:
-    - wordpress:/var/www/wordpress
-    networks:
-      - inception
-    build: 
-      context: requirements/wordpress
-      dockerfile: Dockerfile
-    depends_on:    # wordpress will be started after mariadb
-      - mariadb
-    restart: on-failure
-    expose: 
-      - "9000"
-
-
 # In order to make sure that even if our Wordpress or MariaDB
 # container crashes and loose all our file we'll create
 # a back-up in the form of "volumes" stored locally (= on the
@@ -61,13 +60,13 @@ volumes: # define volumes used by containers
     driver_opts: #specifies a list of options as key-value pairs to pass to the driver for this volume. Those options are driver-dependent.
       type: 'none' # type of volume (tmpfs, ntfs...)
       o: 'bind'
-      device: '/home/alicia/Documents/inception/backup/wordpress' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
+      device: '/home/amarchan/Documents/inception/volumes/wordpress' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
   mariadb:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/home/alicia/Documents/inception/backup/mariadb' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
+      device: '/home/amarchan/Documents/inception/volumes/mariadb' # A MODIFIER SELON OU JE VEUX CREER MES VOLUMES
 
 networks: # define the networkfs used by the containers
     inception:
